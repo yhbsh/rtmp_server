@@ -21,13 +21,19 @@ int main(void) {
   // create a new socket using the addrinfo we got
   int socket_fd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
   if (socket_fd == -1) {
-    fprintf(stderr, "[ERROR]: socket() failed: %s\n", strerror(errno));
+    perror("socket()");
+    return 1;
+  }
+
+  int yes = 1;
+  if (setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
+    perror("setsockopt()");
     return 1;
   }
 
   // bind the new socket to the port 6969 using addrinfo we have
   if (bind(socket_fd, addr->ai_addr, addr->ai_addrlen) == -1) {
-    fprintf(stderr, "[ERROR]: bind() failed: %s\n", strerror(errno));
+    perror("bind()");
     return 1;
   }
 
@@ -36,7 +42,7 @@ int main(void) {
 
   // listen on the socket (i don't know what this do tbh)
   if (listen(socket_fd, 100) == -1) {
-    fprintf(stderr, "[ERROR]: listen() failed: %s\n", strerror(errno));
+    perror("listen()");
     return 1;
   }
 
@@ -46,26 +52,26 @@ int main(void) {
     // is blocking by nature, until a new connection is made then it lets the program keep running
     int socket_client_fd = accept(socket_fd, NULL, NULL);
     if (socket_client_fd == -1) {
-      fprintf(stderr, "[ERROR]: accept() failed: %s\n", strerror(errno));
+      perror("accept()");
       return 1;
     }
 
     // here we are receiving the request that the client sent to us, and we are putting it in a buffer
     char req[1024];
     if (recv(socket_client_fd, req, 1024, 0) == -1) {
-      fprintf(stderr, "[ERROR]: recv() failed: %s\n", strerror(errno));
+      perror("recv()");
       return 1;
     }
 
     // here we are sending the response to the client
     const char *response = "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\nHello World how are you guys doing today?\n";
     if (send(socket_client_fd, response, strlen(response), 0) == -1) {
-      fprintf(stderr, "[ERROR]: send() failed: %s\n", strerror(errno));
+      perror("send()");
       return 1;
     }
 
     if (close(socket_client_fd) == -1) {
-      fprintf(stderr, "[ERROR]: close() failed: %s\n", strerror(errno));
+      perror("close()");
       return 1;
     }
 
