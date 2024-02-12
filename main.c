@@ -2,12 +2,18 @@
 #include <netdb.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
 
-int main(void) {
+int main(int argc, char *argv[]) {
+  if (argc != 2) {
+    perror("USAGE[]: ./main count");
+    return 1;
+  }
+
   // get addrinfo for the port 6969 to bind it to a socket
   struct addrinfo hints = {.ai_family = AF_INET, .ai_socktype = SOCK_STREAM, .ai_flags = AI_PASSIVE};
   struct addrinfo *addr;
@@ -75,7 +81,7 @@ int main(void) {
       return 1;
     }
 
-  } while (++i < 5);
+  } while (++i < atoi(argv[1]));
 
   // close our socket
   close(socket_fd);
