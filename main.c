@@ -54,9 +54,6 @@ int main(int argc, char *argv[]) {
 
   int i = 0;
 
-  // open log file
-  FILE *log = fopen("log", "w");
-
   do {
     // accept the new connection once it comes if it comes, this operation
     // is blocking by nature, until a new connection is made then it lets the program keep running
@@ -66,19 +63,37 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    // here we are receiving the request that the client sent to us, and we are putting it in a buffer
-    char req[1024];
-    int bytes = recv(socket_client_fd, req, 1024, 0);
-    if (bytes == -1) {
+    // Handshake
+    char c0[1];
+    char c1[1536];
+    char c2[1536];
+
+    if (recv(socket_client_fd, c0, 1, 0) == -1) {
       perror("recv()");
       return 1;
     }
 
-    fprintf(log, "%s\n", req);
+    if (send(socket_client_fd, c0, 1, 0) == -1) {
+      perror("send()");
+      return 1;
+    }
 
-    // here we are sending the response to the client
-    const char *response = "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\nHello World\n";
-    if (send(socket_client_fd, response, strlen(response), 0) == -1) {
+    if (recv(socket_client_fd, c1, 1536, 0) == -1) {
+      perror("recv()");
+      return 1;
+    }
+
+    if (send(socket_client_fd, c1, 1536, 0) == -1) {
+      perror("send()");
+      return 1;
+    }
+
+    if (recv(socket_client_fd, c2, 1536, 0) == -1) {
+      perror("recv()");
+      return 1;
+    }
+
+    if (send(socket_client_fd, c2, 1536, 0) == -1) {
       perror("send()");
       return 1;
     }
@@ -90,8 +105,6 @@ int main(int argc, char *argv[]) {
 
   } while (++i < atoi(argv[1]));
 
-  // close logs file
-  fclose(log);
   // close our socket
   close(socket_fd);
 
