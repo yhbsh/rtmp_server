@@ -5,9 +5,9 @@ cc -O3 -o main main.c
 
 pid=$!
 
-for i in {1..200}
-do
+#for i in {1..200}
+#do
   curl -Ss -X GET http://localhost:6969
-done
+#done
 
 kill $pid

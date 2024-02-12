@@ -10,8 +10,8 @@
 int main(void) {
   // get addrinfo for the port 6969 to bind it to a socket
   struct addrinfo hints = {.ai_family = AF_INET, .ai_socktype = SOCK_STREAM, .ai_flags = AI_PASSIVE};
-  struct addrinfo *addr = NULL;
-  getaddrinfo("127.0.0.1", "6969", &hints, &addr);
+  struct addrinfo *addr;
+  getaddrinfo(NULL, "6969", &hints, &addr);
 
   // create a new socket using the addrinfo we got
   int socket_fd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
