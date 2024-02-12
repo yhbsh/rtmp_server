@@ -29,6 +29,7 @@ int main(void) {
   struct sockaddr client_addr;
   socklen_t client_addrlen = sizeof(client_addr);
 
+  int i = 0;
   do {
     // accept the new connection once it comes if it comes, this operation
     // is blocking by nature, until a new connection is made then it lets the program keep running
@@ -42,7 +43,7 @@ int main(void) {
     const char *response = "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\nHello World how are you guys doing today?\n";
     send(socket_client_fd, response, strlen(response), 0);
     close(socket_client_fd);
-  } while (true);
+  } while (i++ < 5);
 
   // close our socket
   close(socket_fd);
