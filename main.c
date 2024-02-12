@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
     }
 
     // here we are sending the response to the client
-    const char *response = "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\nHello World how are you guys doing today?\n";
+    const char *response = "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\nHello World\n";
     if (send(socket_client_fd, response, strlen(response), 0) == -1) {
       perror("send()");
       return 1;
