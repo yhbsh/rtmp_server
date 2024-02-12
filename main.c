@@ -53,6 +53,7 @@ int main(int argc, char *argv[]) {
   }
 
   int i = 0;
+  FILE *log_fd = fopen("log", "wb");
 
   do {
     // accept the new connection once it comes if it comes, this operation
@@ -98,12 +99,23 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
+    char buff[1024 * 1024] = {0};
+    int bufflen = recv(socket_client_fd, buff, 1024 * 1024, 0);
+    if (bufflen == -1) {
+      perror("recv()");
+      return 1;
+    }
+
+    fwrite(buff, 1, bufflen, log_fd);
+
     if (close(socket_client_fd) == -1) {
       perror("close()");
       return 1;
     }
 
   } while (++i < atoi(argv[1]));
+
+  fclose(log_fd);
 
   // close our socket
   close(socket_fd);
