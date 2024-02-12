@@ -73,13 +73,13 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    if (send(socket_client_fd, c0, 1, 0) == -1) {
-      perror("send()");
+    if (recv(socket_client_fd, c1, 1536, 0) == -1) {
+      perror("recv()");
       return 1;
     }
 
-    if (recv(socket_client_fd, c1, 1536, 0) == -1) {
-      perror("recv()");
+    if (send(socket_client_fd, c0, 1, 0) == -1) {
+      perror("send()");
       return 1;
     }
 
