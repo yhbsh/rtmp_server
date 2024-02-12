@@ -9,7 +9,7 @@ cc -O3 -o main main.c
 
 for i in {1..10}
 do
-  curl http://127.0.0.1:6969
+  curl -Ss -X GET http://127.0.0.1:6969
 done
 
 
