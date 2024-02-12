@@ -43,7 +43,7 @@ int main(void) {
     const char *response = "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\nHello World how are you guys doing today?\n";
     send(socket_client_fd, response, strlen(response), 0);
     close(socket_client_fd);
-  } while (i++ < 5);
+  } while (++i < 5);
 
   // close our socket
   close(socket_fd);
