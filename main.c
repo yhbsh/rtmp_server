@@ -9,8 +9,8 @@
 #include <unistd.h>
 
 int main(int argc, char *argv[]) {
-  if (argc != 2) {
-    perror("USAGE[]: ./main count");
+  if (argc != 3) {
+    perror("USAGE[]: ./main MAX_REQ PORT");
     return 1;
   }
 
@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
   struct addrinfo hints = {.ai_family = AF_INET, .ai_socktype = SOCK_STREAM, .ai_flags = AI_PASSIVE};
   struct addrinfo *addr;
 
-  int error = getaddrinfo(NULL, "6969", &hints, &addr);
+  int error = getaddrinfo(NULL, argv[2], &hints, &addr);
   if (error != 0) {
     fprintf(stderr, "[ERROR]: getaddrinfo() failed: %s\n", gai_strerror(error));
     return 1;
@@ -53,6 +53,10 @@ int main(int argc, char *argv[]) {
   }
 
   int i = 0;
+
+  // open log file
+  FILE *log = fopen("log", "w");
+
   do {
     // accept the new connection once it comes if it comes, this operation
     // is blocking by nature, until a new connection is made then it lets the program keep running
@@ -64,10 +68,13 @@ int main(int argc, char *argv[]) {
 
     // here we are receiving the request that the client sent to us, and we are putting it in a buffer
     char req[1024];
-    if (recv(socket_client_fd, req, 1024, 0) == -1) {
+    int bytes = recv(socket_client_fd, req, 1024, 0);
+    if (bytes == -1) {
       perror("recv()");
       return 1;
     }
+
+    fprintf(log, "%s\n", req);
 
     // here we are sending the response to the client
     const char *response = "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Type: text/plain\r\n\r\nHello World\n";
@@ -83,6 +90,8 @@ int main(int argc, char *argv[]) {
 
   } while (++i < atoi(argv[1]));
 
+  // close logs file
+  fclose(log);
   // close our socket
   close(socket_fd);
 
