@@ -1,11 +1,8 @@
 all: main
 
-vim_logs: run
-	vi -c '%!xxd -b' log
-
 run:
 	./main
-
+	vi -c '%!xxd -b' log
 
 main: main.c
 	cc main.c -o main
