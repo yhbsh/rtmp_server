@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 int main(int argc, char *argv[]) {
-  int port = 1935;
+  char *port = "1935";
   int max_requests = 1;
 
   if (argc >= 2) {
@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
   struct addrinfo hints = {.ai_family = AF_INET, .ai_socktype = SOCK_STREAM, .ai_flags = AI_PASSIVE};
   struct addrinfo *addr;
 
-  int error = getaddrinfo(NULL, itoa(port), &hints, &addr);
+  int error = getaddrinfo(NULL, port, &hints, &addr);
   if (error != 0) {
     fprintf(stderr, "[ERROR]: getaddrinfo() failed: %s\n", gai_strerror(error));
     return 1;
