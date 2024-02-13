@@ -9,16 +9,22 @@
 #include <unistd.h>
 
 int main(int argc, char *argv[]) {
-  if (argc != 3) {
-    perror("USAGE[]: ./main MAX_REQ PORT");
-    return 1;
+  int port = 1935;
+  int max_requests = 1;
+
+  if (argc >= 2) {
+    max_requests = atoi(argv[1]);
+  }
+
+  if (argc >= 3) {
+    port = argv[2];
   }
 
   // get addrinfo for the port 6969 to bind it to a socket
   struct addrinfo hints = {.ai_family = AF_INET, .ai_socktype = SOCK_STREAM, .ai_flags = AI_PASSIVE};
   struct addrinfo *addr;
 
-  int error = getaddrinfo(NULL, argv[2], &hints, &addr);
+  int error = getaddrinfo(NULL, itoa(port), &hints, &addr);
   if (error != 0) {
     fprintf(stderr, "[ERROR]: getaddrinfo() failed: %s\n", gai_strerror(error));
     return 1;
@@ -74,6 +80,8 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
+    fwrite(c0, 1, 1, log_fd);
+
     if (recv(socket_client_fd, c1, 1536, 0) == -1) {
       perror("recv()");
       return 1;
@@ -94,6 +102,8 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
+    fwrite(c2, 1, 1536, log_fd);
+
     if (send(socket_client_fd, c2, 1536, 0) == -1) {
       perror("send()");
       return 1;
@@ -106,14 +116,14 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    fwrite(buff, 1, bufflen, log_fd);
+    // fwrite(buff, 1, bufflen, log_fd);
 
     if (close(socket_client_fd) == -1) {
       perror("close()");
       return 1;
     }
 
-  } while (++i < atoi(argv[1]));
+  } while (++i < max_requests);
 
   fclose(log_fd);
 
