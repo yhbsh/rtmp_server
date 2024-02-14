@@ -102,8 +102,6 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    fwrite(c2, 1, 1536, log_fd);
-
     if (send(socket_client_fd, c2, 1536, 0) == -1) {
       perror("send()");
       return 1;
@@ -116,7 +114,7 @@ int main(int argc, char *argv[]) {
       return 1;
     }
 
-    // fwrite(buff, 1, bufflen, log_fd);
+    fwrite(buff, 1, bufflen, log_fd);
 
     if (close(socket_client_fd) == -1) {
       perror("close()");
